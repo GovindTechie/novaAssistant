@@ -1,99 +1,93 @@
 Nova Assistant
 ==============
+Nova Assistant is a modern, Flask-based personal assistant application that integrates voice command support, Gemini API connectivity, and browser-based text-to-speech functionality. It has been designed to work seamlessly both locally (with direct microphone access) and on headless hosting environments (using browser-based audio recording).
 
-Nova Assistant is a Flask-based personal assistant application with voice command 
-integration, Gemini API connectivity, and browser-based text-to-speech. It’s 
-designed to work both locally (with direct microphone access) and on headless 
-environments like Render (using browser-based audio recording).
+Features:
+---------
+• Voice Commands:
+  - Local: Captures audio using your system microphone with the SpeechRecognition library.
+  - Remote: Uses browser-based recording to upload audio for speech-to-text processing.
+  
+• Browser-Based Text-to-Speech:
+  - Utilizes the Web Speech API to provide audible responses directly in the browser.
 
-Features
---------
-- Voice Commands:
-  - Locally: Captures audio using your system microphone via speech_recognition.
-  - On Render or other headless environments: Records audio in the browser and 
-    uploads it to the server for speech recognition.
-- Text-to-Speech (Browser):
-  - Uses the Web Speech API for spoken responses directly in the user’s browser.
-- Gemini API Integration:
-  - Answers user queries by calling the Gemini API (requires a GEMINI_API_KEY).
-- Web UI:
-  - A responsive interface built with Flask templates and static files 
-    (HTML, CSS, JavaScript).
+• Gemini API Integration:
+  - Processes user queries via the Gemini API (requires a valid GEMINI_API_KEY).
 
-Requirements
-------------
-- Python 3.8+
-- Flask
-- python-dotenv
-- requests
-- SpeechRecognition
-- gunicorn
+• Responsive Web Interface:
+  - Built with Flask templates and modern CSS for an engaging user experience.
 
-Installation
-------------
+Requirements:
+-------------
+• Python 3.8+
+• Flask
+• python-dotenv
+• requests
+• SpeechRecognition
+• gunicorn (for production deployment)
+
+Installation:
+-------------
 1. Clone the Repository:
-   git clone https://github.com/YourUsername/nova-assistant.git
+   git clone https://github.com/GovindTechie/nova-assistant.git
    cd nova-assistant
 
 2. Install Dependencies:
    pip install -r requirements.txt
 
-3. Set Up Environment Variables:
-   - Create a .env file in the root directory with:
-     GEMINI_API_KEY=your_gemini_api_key
-   - Replace 'your_gemini_api_key' with your actual key.
+3. Configure Environment:
+   Create a file named .env in the root directory and add:
+   
+       GEMINI_API_KEY=your_gemini_api_key
 
-Running Locally
----------------
-1. Start the Flask App:
+   Replace "your_gemini_api_key" with your actual Gemini API key.
+
+Running Locally:
+----------------
+1. Start the Flask Application:
    python app.py
 
-2. Open in Browser:
-   Visit http://127.0.0.1:5000 to access the Nova Assistant interface.
-   Use the microphone button (server-side mic) or browser-based recording 
-   section, depending on your environment.
+2. Open your browser and navigate to:
+   http://127.0.0.1:5000
 
-Deploying on Render
--------------------
-1. Push Code to GitHub:
-   Make sure your code and requirements.txt are committed to a GitHub repository.
+3. Use the voice command features:
+   - Click "Click to speak" for local voice commands.
+   - Use the browser-based recording controls if microphone access is unavailable.
 
-2. Create a New Web Service on Render:
-   - Sign in to https://render.com/
-   - Select "New" → "Web Service"
-   - Connect your GitHub repository
+Deploying on Render:
+---------------------
+1. Push your updated code to GitHub.
+2. Log in to Render and create a new Web Service linked to your repository.
+3. Configure the service:
    - Build Command: pip install -r requirements.txt
    - Start Command: gunicorn app:app --bind 0.0.0.0:5000
+4. Set Environment Variables:
+   Add GEMINI_API_KEY in Render’s dashboard matching your .env settings.
+5. Deploy and test your service via the provided Render URL.
 
-3. Set Environment Variables:
-   Add GEMINI_API_KEY in the Render dashboard to match your .env setup.
-
-4. Deploy & Test:
-   Wait for the build to finish, then visit the generated URL to test your assistant.
-
-Usage
------
-- Local Voice Command:
-  Click "Click to speak" to record audio using your PC microphone 
-  (works only when running locally with a real microphone).
-- Browser Recording (Headless):
-  Click "Start Recording," then "Stop Recording," and finally 
-  "Upload Recorded Audio" to process commands on a remote server (e.g., Render).
-- Text Commands:
-  Type your query in the "Type your command here…" field and press "Send."
-
-License
--------
-This project is licensed under the MIT License – feel free to modify as needed.
-
-Acknowledgments
----------------
-- Flask for the web framework
-- SpeechRecognition for voice capture
-- Web Speech API for browser-based TTS
-- Render for hosting
-
-Author
+Usage:
 ------
+• Local Voice Command:
+  Use the "Click to speak" button to capture and process your voice input (when a microphone is available).
+
+• Browser-Based Audio Recording:
+  Record audio using the provided browser controls ("Start Recording", "Stop Recording", and "Upload Recorded Audio") for environments where direct microphone access isn’t available.
+
+• Manual Text Commands:
+  Enter your commands in the text field and click "Send" to process them.
+
+License:
+--------
+This project is licensed under the MIT License. Refer to the LICENSE file for details.
+
+Acknowledgments:
+----------------
+• Flask – for the web framework.
+• SpeechRecognition – for audio capture and processing.
+• Web Speech API – for browser-based text-to-speech.
+• Render – for hosting the application.
+
+Author:
+-------
 Govind Khedkar
-(Feel free to add more details or links here.)
+
