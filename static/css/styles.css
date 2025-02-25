@@ -1,0 +1,327 @@
+/* ===============================
+   Basic Reset and Base Styles
+   =============================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f7f9fc;
+  color: #333;
+}
+
+/* ===============================
+   Header Styling
+   =============================== */
+header {
+  width: 100%;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 2px solid #4285f4;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+}
+
+header h1 {
+  color: #4285f4;
+  font-size: 2em;
+  margin-bottom: 5px;
+}
+
+header p {
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+/* ===============================
+   Footer Styling
+   =============================== */
+footer {
+  width: 100%;
+  padding: 10px 20px;
+  background: #fff;
+  border-top: 2px solid #4285f4;
+  text-align: center;
+  font-size: 0.9em;
+  color: #777;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+}
+
+/* ===============================
+   Integration Info Panel
+   =============================== */
+#integrationPanel {
+  position: fixed;
+  bottom: 60px; /* Positioned above the footer */
+  left: 20px;
+  background: #fff;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  padding: 10px 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-size: 0.9em;
+  color: #4285f4;
+  z-index: 1000;
+}
+
+/* ===============================
+   Main Content Area
+   =============================== */
+main {
+  position: absolute;
+  top: 70px;  /* Below the header */
+  bottom: 50px; /* Above the footer */
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+  overflow: auto;
+}
+
+/* ===============================
+   Left Panel: Instructions
+   =============================== */
+.left-panel {
+  flex: 0 0 40%;
+  background: #fff;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.left-panel h2 {
+  color: #4285f4;
+  margin-bottom: 10px;
+}
+
+.left-panel ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.left-panel li {
+  background: #e9f0fb;
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-left: 4px solid #4285f4;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+/* Special styling for the "About me" item */
+.left-panel li.intro {
+  background-color: #cce5ff;
+}
+
+.left-panel li span {
+  font-weight: bold;
+  color: #202124;
+}
+
+/* ===============================
+   Right Panel: Interaction Area
+   =============================== */
+.right-panel {
+  flex: 1;
+  background: #fff;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Top Section of Interaction Area */
+.interaction-top {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 20px;
+}
+
+.interaction-top p {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   Result Box Styling
+   =============================== */
+.result-box {
+  width: 100%;
+  padding: 10px;
+  background: #e8f0fe;
+  border-left: 4px solid #4285f4;
+  border-radius: 4px;
+  font-size: 1em;
+  min-height: 50px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+/* Fade-in effect for result text */
+#resultText {
+  transition: opacity 0.5s ease;
+}
+
+/* Persistent result control buttons */
+.result-controls {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  gap: 5px;
+}
+
+.result-controls button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  color: #4285f4;
+  transition: transform 0.2s ease;
+}
+
+.result-controls button:hover {
+  transform: scale(1.1);
+}
+
+/* ===============================
+   Bottom Section of Interaction Area
+   =============================== */
+.interaction-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls {
+  margin-right: 15px;
+}
+
+/* Styling for the Microphone and Stop Speech Buttons */
+.mic-button {
+  background: #4285f4;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.mic-button:hover {
+  background: #3367d6;
+  transform: scale(1.05);
+}
+
+.mic-button img {
+  width: 30px;
+  height: 30px;
+}
+
+/* ===============================
+   Manual Input Styling
+   =============================== */
+.manual-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.manual-input input {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.manual-input button {
+  padding: 10px 15px;
+  background: #4285f4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.manual-input button:hover {
+  background: #3367d6;
+  transform: scale(1.02);
+}
+
+/* ===============================
+   Responsive Design Adjustments
+   =============================== */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.5em;
+  }
+  header p {
+    font-size: 0.9em;
+  }
+  .left-panel, .right-panel {
+    padding: 15px;
+  }
+  .manual-input input {
+    padding: 8px;
+  }
+  .manual-input button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+}
+
+/* ===============================
+   Styles for Browser-Based Audio Recording Section
+   =============================== */
+.audio-recording {
+  margin-top: 20px;
+  padding: 10px;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  background: #fff;
+}
+.audio-recording h2 {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+.audio-recording button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  background: #4285f4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.audio-recording button:hover {
+  background: #3367d6;
+}
