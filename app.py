@@ -7,8 +7,9 @@ import speech_recognition as sr
 import logging
 import platform
 from dotenv import load_dotenv
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Response
 from werkzeug.utils import secure_filename
+from pydub import AudioSegment
 
 # Configure logging
 logging.basicConfig(
@@ -127,29 +128,40 @@ def open_desktop_app(app_name):
 def process_command(command):
     """
     Process a voice or manual command.
-    Returns a response message after processing the command.
+    Returns either:
+      - A Flask Response object (if we want to return JSON for open/search).
+      - A string (if we just want to return text).
     """
     command_lower = command.lower().strip()
     response_text = ""
 
+    # 1. Basic "who are you?" question
     if command_lower in ["who are you", "what is your name", "who r u"]:
         response_text = "I am Nova, your personal assistant created by Govind Khedkar."
         speak(response_text)
         return response_text
 
-    if command_lower in ["exit", "exits"]:
+    # 2. Exit command
+    elif command_lower in ["exit", "exits"]:
         speak("Goodbye!")
         response_text = "Goodbye! Exiting now..."
+
+    # 3. If command is not empty/none
     elif command_lower and command_lower != "none":
-        elif "open" in command_lower:
+
+        # 3A. "open" command
+        if "open" in command_lower:
             if "desktop" in command_lower:
+                # Desktop commands won't work on Render
                 response_text = "Desktop app commands work only locally."
             else:
                 website = command_lower.split("open", 1)[1].strip().replace(" ", "")
                 url = f"https://www.{website}.com"
                 response_text = f"Opening website: {website}"
+                # Return a JSON response so the client can open the URL
                 return jsonify({"result": response_text, "command": command, "open_url": url})
 
+        # 3B. "search" command
         elif "search" in command_lower:
             search_query = command_lower.split("search", 1)[1].strip()
             if search_query:
@@ -157,8 +169,10 @@ def process_command(command):
                 query_str = search_query.replace(" ", "+")
                 url = f"https://www.google.com/search?q={query_str}"
                 response_text = f"Searching for: {search_query}"
+                # Return a JSON response so the client can open the URL
                 return jsonify({"result": response_text, "command": command, "open_url": url})
 
+        # 3C. "play music" command
         elif "play music" in command_lower:
             music_name = command_lower.split("play music", 1)[1].strip()
             if music_name:
@@ -170,24 +184,30 @@ def process_command(command):
             else:
                 speak("Please specify the song name.")
                 response_text = "No song name provided."
+
+        # 3D. "the time" command
         elif "the time" in command_lower:
-            import pytz  # Ensure this is imported at the top
+            import pytz
             tz = pytz.timezone('Asia/Kolkata')
             current_time = datetime.datetime.now(tz).strftime("%I:%M %p")
             speak(f"The time is {current_time}")
             response_text = f"The time is {current_time}"
 
+        # 3E. All other commands => Gemini
         else:
             gemini_response = query_gemini(command)
             speak(gemini_response)
             response_text = gemini_response
+
+    # 4. If no command recognized
     else:
         speak("I didn't catch that. Please try again.")
         response_text = "No valid command recognized."
 
+    # Return a string if we didn't do a direct jsonify() above
     return response_text
 
-# ----------------- Original Flask Routes -----------------
+# ----------------- Flask Routes -----------------
 
 @app.route('/')
 def index():
@@ -195,17 +215,24 @@ def index():
 
 @app.route('/listen', methods=["POST"])
 def listen():
-    # For local testing using server microphone input
     command = take_command()
-    result = process_command(command)
-    return jsonify({"result": result, "command": command})
+    outcome = process_command(command)
+    # If process_command() returned a Flask Response (jsonify), return it directly
+    if isinstance(outcome, Response):
+        return outcome
+    else:
+        return jsonify({"result": outcome, "command": command})
 
 @app.route('/command', methods=["POST"])
 def command_route():
     data = request.get_json()
     command_text = data.get("command", "")
-    result = process_command(command_text)
-    return jsonify({"result": result, "command": command_text})
+    outcome = process_command(command_text)
+    # If process_command() returned a Flask Response (jsonify), return it directly
+    if isinstance(outcome, Response):
+        return outcome
+    else:
+        return jsonify({"result": outcome, "command": command_text})
 
 @app.route('/stop_speech', methods=["POST"])
 def stop_speech_route():
@@ -225,8 +252,6 @@ def suggest():
     return jsonify([q, suggestions])
 
 # ----------------- New Endpoint for Audio Upload -----------------
-
-from pydub import AudioSegment
 
 @app.route('/upload', methods=["POST"])
 def upload_audio():
@@ -262,7 +287,6 @@ def upload_audio():
         return jsonify({"error": "Could not understand audio"}), 400
     except sr.RequestError as e:
         return jsonify({"error": f"Speech Recognition service error: {e}"}), 500
-
 
 if __name__ == '__main__':
     # For deployment, host 0.0.0.0 makes the app accessible externally
