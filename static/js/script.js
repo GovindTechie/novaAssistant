@@ -43,6 +43,7 @@ function updateInteraction(text) {
   document.getElementById("interactionText").innerText = text;
 }
 
+/* --- Disable Search Suggestions by commenting out these functions ---
 function fetchSuggestions(query) {
   fetch(`/suggest?q=${encodeURIComponent(query)}`)
     .then(response => response.json())
@@ -72,30 +73,27 @@ function showSuggestions(suggestions) {
 function clearSuggestions() {
   document.getElementById("suggestions").innerHTML = "";
 }
+--- End Suggestions --- */
 
 const manualCommandInput = document.getElementById("manualCommand");
 manualCommandInput.addEventListener("keyup", function(e) {
   const value = this.value;
-  if (value.toLowerCase().startsWith("search ")) {
-    const parts = value.split(" ");
-    if (parts.length > 1) {
-      const query = parts.slice(1).join(" ");
-      fetchSuggestions(query);
-    }
-  } else {
-    clearSuggestions();
-  }
+  // Search suggestions disabled:
+  // if (value.toLowerCase().startsWith("search ")) {
+  //   const parts = value.split(" ");
+  //   if (parts.length > 1) {
+  //     const query = parts.slice(1).join(" ");
+  //     fetchSuggestions(query);
+  //   }
+  // } else {
+  //   clearSuggestions();
+  // }
 });
 
 manualCommandInput.addEventListener("keydown", function(e) {
   if (e.key === "Tab") {
-    const suggestionsDiv = document.getElementById("suggestions");
-    if (suggestionsDiv && suggestionsDiv.children.length > 0) {
-      e.preventDefault();
-      const firstSuggestion = suggestionsDiv.children[0].innerText;
-      this.value = "search " + firstSuggestion;
-      clearSuggestions();
-    }
+    // Disable suggestion navigation since suggestions are disabled.
+    e.preventDefault();
   }
 });
 
@@ -113,8 +111,11 @@ document.getElementById("micButton").addEventListener("click", function() {
   .then(data => {
     updateResult(data.result);
     document.getElementById("sendCommand").innerText = "Send";
-    // Speak the result in the browser
     speakBrowser(data.result);
+    // If the server returns an open_url, open it on the client side.
+    if (data.open_url) {
+      window.open(data.open_url, '_blank');
+    }
   })
   .catch(error => {
     if (error.name === 'AbortError') {
@@ -128,9 +129,8 @@ document.getElementById("micButton").addEventListener("click", function() {
 });
 
 document.getElementById("stopSpeechButton").addEventListener("click", function() {
-    window.speechSynthesis.cancel();
+  window.speechSynthesis.cancel();
 });
-
 
 function sendManualCommand() {
   let commandText = manualCommandInput.value;
@@ -161,6 +161,9 @@ function sendManualCommand() {
     updateResult(data.result);
     sendBtn.innerText = "Send";
     speakBrowser(data.result);
+    if (data.open_url) {
+      window.open(data.open_url, '_blank');
+    }
   })
   .catch(error => {
     if (error.name === 'AbortError') {
@@ -264,7 +267,7 @@ function speakBrowser(text) {
   synth.speak(utter);
 }
 
-// Attach event listeners for the new audio recording buttons
+// Attach event listeners for audio recording buttons
 document.getElementById("startRecordingBtn").addEventListener("click", startBrowserRecording);
 document.getElementById("stopRecordingBtn").addEventListener("click", stopBrowserRecording);
 document.getElementById("uploadRecordingBtn").addEventListener("click", uploadRecordedAudio);
