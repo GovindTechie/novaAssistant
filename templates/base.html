@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NOVA Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header role="banner">
+    <h1>NOVA Assistant</h1>
+    <p>Welcome! Use your voice or type a command to control your computer.</p>
+  </header>
+
+  <div id="integrationPanel" role="complementary">
+    Gemini Integration Active
+  </div>
+
+  <main role="main">
+    <div class="left-panel">
+      <h2>Instructions</h2>
+      <ul>
+        <li><span>Open [Website]</span> – e.g., "open Facebook" to launch Facebook.</li>
+        <li><span>Open Desktop [Application]</span> – e.g., "open desktop calculator" to start Calculator.</li>
+        <li><span>Search [Query]</span> – e.g., "search weather" for weather updates.</li>
+        <li><span>Play music [Song]</span> – e.g., "play music Shape of You" to search YouTube.</li>
+        <li><span>The time</span> – to hear the current time.</li>
+        <li><span>Exit</span> – to exit the assistant.</li>
+        <li class="intro">
+          <b>About me</b><br>
+          <em>
+            I am Nova Desk – next-generation AI companion and virtual assistant integrated with Gemini.
+            Developed by Govind Khedkar from Beed, Maharashtra, I'm here to help you with your daily tasks.
+          </em>
+        </li>
+      </ul>
+    </div>
+
+    <div class="right-panel">
+      <div class="interaction-top">
+        <p id="interactionText">Click the microphone or type your command below.</p>
+        <div id="result" class="result-box" role="region" aria-live="polite">
+          <span id="resultText">Awaiting your command...</span>
+          <div id="resultControls" class="result-controls">
+            <button id="copyResult" title="Copy" aria-label="Copy result">📋</button>
+            <button id="clearResult" title="Clear" aria-label="Clear result">&times;</button>
+          </div>
+        </div>
+      </div>
+      <div class="interaction-bottom">
+        <div class="controls">
+          <button class="mic-button" id="micButton" title="Click to speak" aria-label="Activate voice command" tabindex="0">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/microphone.png" alt="Microphone">
+          </button>
+          <button class="mic-button" id="stopSpeechButton" title="Stop Speech" aria-label="Stop speech output" tabindex="0">
+            &#9209;
+          </button>
+        </div>
+        <div class="manual-input">
+          <input type="text" id="manualCommand" placeholder="Type your command here..." aria-label="Enter command" tabindex="0">
+          <button id="sendCommand" aria-label="Send command" tabindex="0">Send</button>
+        </div>
+      </div>
+
+      <!-- New Browser-Based Audio Recording Section -->
+      <div class="audio-recording">
+        <h2>Record Audio (Browser)</h2>
+        <button id="startRecordingBtn">Start Recording</button>
+        <button id="stopRecordingBtn">Stop Recording</button>
+        <button id="uploadRecordingBtn">Upload Recorded Audio</button>
+        <audio id="recordedAudio" controls></audio>
+      </div>
+
+      <!-- Added suggestions container -->
+      <div id="suggestions"></div>
+    </div>
+  </main>
+
+  <footer role="contentinfo">
+    <p>&copy; 2025 NOVA Assistant. Made by Govind Khedkar.</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
