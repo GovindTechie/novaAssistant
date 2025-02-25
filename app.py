@@ -168,9 +168,12 @@ def process_command(command):
                 speak("Please specify the song name.")
                 response_text = "No song name provided."
         elif "the time" in command_lower:
-            current_time = datetime.datetime.now().strftime("%I:%M %p")
+            import pytz  # Ensure this is imported at the top
+            tz = pytz.timezone('Asia/Kolkata')
+            current_time = datetime.datetime.now(tz).strftime("%I:%M %p")
             speak(f"The time is {current_time}")
             response_text = f"The time is {current_time}"
+
         else:
             gemini_response = query_gemini(command)
             speak(gemini_response)
@@ -210,7 +213,7 @@ def stop_speech_route():
 def suggest():
     q = request.args.get("q", "")
     suggestions = [
-        "weather in beed",
+        "weather",
         "news today",
         "best music",
         "time now",
