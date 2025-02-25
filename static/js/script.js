@@ -128,15 +128,9 @@ document.getElementById("micButton").addEventListener("click", function() {
 });
 
 document.getElementById("stopSpeechButton").addEventListener("click", function() {
-  fetch("/stop_speech", { method: "POST" })
-    .then(response => response.json())
-    .then(data => {
-      alert(data.result);
-    })
-    .catch(error => {
-      console.error("Error stopping speech:", error);
-    });
+    window.speechSynthesis.cancel();
 });
+
 
 function sendManualCommand() {
   let commandText = manualCommandInput.value;
