@@ -141,21 +141,24 @@ def process_command(command):
         speak("Goodbye!")
         response_text = "Goodbye! Exiting now..."
     elif command_lower and command_lower != "none":
-        if "open" in command_lower:
+        elif "open" in command_lower:
             if "desktop" in command_lower:
-                app_name = command_lower.split("desktop", 1)[1].strip()
-                response_text = open_desktop_app(app_name)
+                response_text = "Desktop app commands work only locally."
             else:
                 website = command_lower.split("open", 1)[1].strip().replace(" ", "")
-                speak(f"Opening {website}...")
-                webbrowser.open(f"https://www.{website}.com")
+                url = f"https://www.{website}.com"
                 response_text = f"Opening website: {website}"
+                return jsonify({"result": response_text, "command": command, "open_url": url})
+
         elif "search" in command_lower:
             search_query = command_lower.split("search", 1)[1].strip()
             if search_query:
                 speak(f"Searching for {search_query} on Google...")
-                webbrowser.open(f"https://www.google.com/search?q={search_query}")
+                query_str = search_query.replace(" ", "+")
+                url = f"https://www.google.com/search?q={query_str}"
                 response_text = f"Searching for: {search_query}"
+                return jsonify({"result": response_text, "command": command, "open_url": url})
+
         elif "play music" in command_lower:
             music_name = command_lower.split("play music", 1)[1].strip()
             if music_name:
@@ -223,24 +226,32 @@ def suggest():
 
 # ----------------- New Endpoint for Audio Upload -----------------
 
+from pydub import AudioSegment
+
 @app.route('/upload', methods=["POST"])
 def upload_audio():
-    """
-    This endpoint is used in environments (like Render) where the server
-    cannot access the microphone. The client records audio via the browser
-    and uploads the file for processing.
-    """
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
-    
+
     file = request.files["file"]
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
-    
+
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(filepath)
-    
+
+    # Convert to WAV if not already a WAV file
+    if not filename.lower().endswith('.wav'):
+        try:
+            # This assumes that FFmpeg is installed in the environment.
+            sound = AudioSegment.from_file(filepath)
+            new_filepath = os.path.splitext(filepath)[0] + '.wav'
+            sound.export(new_filepath, format="wav")
+            filepath = new_filepath
+        except Exception as e:
+            return jsonify({"error": f"Audio conversion error: {e}"}), 500
+
     recognizer = sr.Recognizer()
     try:
         with sr.AudioFile(filepath) as source:
@@ -251,6 +262,7 @@ def upload_audio():
         return jsonify({"error": "Could not understand audio"}), 400
     except sr.RequestError as e:
         return jsonify({"error": f"Speech Recognition service error: {e}"}), 500
+
 
 if __name__ == '__main__':
     # For deployment, host 0.0.0.0 makes the app accessible externally
