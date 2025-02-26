@@ -148,20 +148,14 @@ def process_command(command):
 
     # 3. If command is not empty/none
     elif command_lower and command_lower != "none":
-
-        # 3A. "open" command
         if "open" in command_lower:
             if "desktop" in command_lower:
-                # Desktop commands won't work on Render
                 response_text = "Desktop app commands work only locally."
             else:
                 website = command_lower.split("open", 1)[1].strip().replace(" ", "")
                 url = f"https://www.{website}.com"
                 response_text = f"Opening website: {website}"
-                # Return a JSON response so the client can open the URL
                 return jsonify({"result": response_text, "command": command, "open_url": url})
-
-        # 3B. "search" command
         elif "search" in command_lower:
             search_query = command_lower.split("search", 1)[1].strip()
             if search_query:
@@ -169,42 +163,32 @@ def process_command(command):
                 query_str = search_query.replace(" ", "+")
                 url = f"https://www.google.com/search?q={query_str}"
                 response_text = f"Searching for: {search_query}"
-                # Return a JSON response so the client can open the URL
                 return jsonify({"result": response_text, "command": command, "open_url": url})
-
-        # 3C. "play music" command
         elif "play music" in command_lower:
             music_name = command_lower.split("play music", 1)[1].strip()
             if music_name:
                 speak(f"Searching for {music_name} on YouTube...")
                 query_str = music_name.replace(" ", "+")
-                webbrowser.open(f"https://www.youtube.com/results?search_query={query_str}")
-                speak(f"Playing music: {music_name} on YouTube...")
-                response_text = f"Playing music: {music_name}"
+                url = f"https://www.youtube.com/results?search_query={query_str}"
+                response_text = f"Playing music: {music_name} on YouTube"
+                return jsonify({"result": response_text, "command": command, "open_url": url})
             else:
                 speak("Please specify the song name.")
                 response_text = "No song name provided."
-
-        # 3D. "the time" command
         elif "the time" in command_lower:
             import pytz
             tz = pytz.timezone('Asia/Kolkata')
             current_time = datetime.datetime.now(tz).strftime("%I:%M %p")
             speak(f"The time is {current_time}")
             response_text = f"The time is {current_time}"
-
-        # 3E. All other commands => Gemini
         else:
             gemini_response = query_gemini(command)
             speak(gemini_response)
             response_text = gemini_response
-
-    # 4. If no command recognized
     else:
         speak("I didn't catch that. Please try again.")
         response_text = "No valid command recognized."
 
-    # Return a string if we didn't do a direct jsonify() above
     return response_text
 
 # ----------------- Flask Routes -----------------
@@ -215,20 +199,18 @@ def index():
 
 @app.route('/listen', methods=["POST"])
 def listen():
-    command = take_command()
-    outcome = process_command(command)
-    # If process_command() returned a Flask Response (jsonify), return it directly
-    if isinstance(outcome, Response):
-        return outcome
-    else:
-        return jsonify({"result": outcome, "command": command})
+    # Instead of trying to capture audio on the server (which won't work on hosted environments),
+    # instruct users to use the browser-based audio recording/upload functionality.
+    return jsonify({
+        "result": "Direct microphone input is not available in this environment. Please use the browser-based audio recording/upload functionality.",
+        "command": ""
+    })
 
 @app.route('/command', methods=["POST"])
 def command_route():
     data = request.get_json()
     command_text = data.get("command", "")
     outcome = process_command(command_text)
-    # If process_command() returned a Flask Response (jsonify), return it directly
     if isinstance(outcome, Response):
         return outcome
     else:
@@ -269,7 +251,6 @@ def upload_audio():
     # Convert to WAV if not already a WAV file
     if not filename.lower().endswith('.wav'):
         try:
-            # This assumes that FFmpeg is installed in the environment.
             sound = AudioSegment.from_file(filepath)
             new_filepath = os.path.splitext(filepath)[0] + '.wav'
             sound.export(new_filepath, format="wav")
@@ -289,5 +270,4 @@ def upload_audio():
         return jsonify({"error": f"Speech Recognition service error: {e}"}), 500
 
 if __name__ == '__main__':
-    # For deployment, host 0.0.0.0 makes the app accessible externally
     app.run(debug=True, host="0.0.0.0", port=5000)
