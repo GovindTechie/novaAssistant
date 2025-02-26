@@ -199,8 +199,7 @@ def index():
 
 @app.route('/listen', methods=["POST"])
 def listen():
-    # Instead of trying to capture audio on the server (which won't work on hosted environments),
-    # instruct users to use the browser-based audio recording/upload functionality.
+    # For hosted environments, instruct users to use browser-based recording
     return jsonify({
         "result": "Direct microphone input is not available in this environment. Please use the browser-based audio recording/upload functionality.",
         "command": ""
@@ -248,12 +247,12 @@ def upload_audio():
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(filepath)
 
-    # Convert to WAV if not already a WAV file
+    # Convert to WAV if not already a WAV file; force PCM 16-bit, 44100 Hz, mono
     if not filename.lower().endswith('.wav'):
         try:
             sound = AudioSegment.from_file(filepath)
             new_filepath = os.path.splitext(filepath)[0] + '.wav'
-            sound.export(new_filepath, format="wav")
+            sound.export(new_filepath, format="wav", codec="pcm_s16le", parameters=["-ar", "44100", "-ac", "1"])
             filepath = new_filepath
         except Exception as e:
             return jsonify({"error": f"Audio conversion error: {e}"}), 500
