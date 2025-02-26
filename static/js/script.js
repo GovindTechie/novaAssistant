@@ -264,8 +264,39 @@ async function uploadRecordedAudio() {
 function speakBrowser(text) {
   const synth = window.speechSynthesis;
   const utter = new SpeechSynthesisUtterance(text);
-  synth.speak(utter);
+
+  // Try to retrieve available voices
+  let voices = synth.getVoices();
+  
+  function selectFemaleVoice() {
+    // Filter available voices for a female-sounding voice.
+    // The available voice names depend on the browser/OS.
+    const femaleVoices = voices.filter(voice =>
+      voice.name.toLowerCase().includes("zira") || // Microsoft Zira (common in Windows)
+      voice.name.toLowerCase().includes("female")  || // Generic check
+      voice.name.toLowerCase().includes("susan")
+    );
+    if (femaleVoices.length > 0) {
+      utter.voice = femaleVoices[0];
+    } else if (voices.length > 0) {
+      // Fallback: use the first available voice
+      utter.voice = voices[0];
+    }
+  }
+
+  if (voices.length === 0) {
+    // Some browsers load voices asynchronously. Listen for the event.
+    synth.onvoiceschanged = function() {
+      voices = synth.getVoices();
+      selectFemaleVoice();
+      synth.speak(utter);
+    };
+  } else {
+    selectFemaleVoice();
+    synth.speak(utter);
+  }
 }
+
 
 // Attach event listeners for audio recording buttons
 document.getElementById("startRecordingBtn").addEventListener("click", startBrowserRecording);
