@@ -250,15 +250,16 @@ def upload_audio():
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(filepath)
 
-    # Convert to WAV if not already a WAV file; force PCM 16-bit, 44100 Hz, mono
-    if not filename.lower().endswith('.wav'):
-        try:
-            sound = AudioSegment.from_file(filepath)
-            new_filepath = os.path.splitext(filepath)[0] + '.wav'
-            sound.export(new_filepath, format="wav", codec="pcm_s16le", parameters=["-ar", "44100", "-ac", "1"])
-            filepath = new_filepath
-        except Exception as e:
-            return jsonify({"error": f"Audio conversion error: {e}"}), 500
+    # Always attempt to convert the uploaded file to WAV.
+    try:
+        # Use pydub to open the file (auto-detects format)
+        sound = AudioSegment.from_file(filepath)
+        # Export the sound to WAV using default parameters
+        new_filepath = os.path.splitext(filepath)[0] + '.wav'
+        sound.export(new_filepath, format="wav")
+        filepath = new_filepath
+    except Exception as e:
+        return jsonify({"error": f"Audio conversion error: {e}"}), 500
 
     recognizer = sr.Recognizer()
     try:
@@ -270,6 +271,7 @@ def upload_audio():
         return jsonify({"error": "Could not understand audio"}), 400
     except sr.RequestError as e:
         return jsonify({"error": f"Speech Recognition service error: {e}"}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)
