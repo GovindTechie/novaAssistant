@@ -183,8 +183,11 @@ def process_command(command):
             response_text = f"The time is {current_time}"
         else:
             gemini_response = query_gemini(command)
-            speak(gemini_response)
-            response_text = gemini_response
+            # Remove asterisks from the Gemini response
+            clean_response = gemini_response.replace("*", "")
+            speak(clean_response)
+            response_text = clean_response
+
     else:
         speak("I didn't catch that. Please try again.")
         response_text = "No valid command recognized."
