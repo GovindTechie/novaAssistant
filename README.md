@@ -48,7 +48,8 @@ Requirements
 Installation
 ------------
 
-git clone https://github.com/GovindTechie/nova-assistant.git
+git clone https://github.com/GovindTechie/novaAssistant.git
+
 cd nova-assistant
 pip install -r requirements.txt
 
